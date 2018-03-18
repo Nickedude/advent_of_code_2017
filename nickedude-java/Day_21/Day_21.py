@@ -62,77 +62,66 @@ def rotate(pattern):
 
     return newPattern
 
+def matchRotations(pattern, rules):
+    rotated = rotate(pattern)
+    temp = oneLine(rotated)
+
+    if temp in rules:
+        return mulLine(rules[temp])
+
+    rotated = rotate(rotated)
+    temp = oneLine(rotated)
+    if temp in rules:
+        return mulLine(rules[temp])
+
+    rotated = rotate(rotated)
+    temp = oneLine(rotated)
+    if temp in rules:
+        return mulLine(rules[temp])
+
+    return None
 
 def match(pattern, rules):
-    '''
-    print("Pattern:")
-    for i in range(0,len(pattern)):
-        print(pattern[i])
-    '''
-    temp = oneLine(pattern)
-    #print(temp)
+
+    temp = oneLine(pattern)                 # Try match directly
     if temp in rules:
         return mulLine(rules[temp])
 
-    temp = flipHorizontal(pattern)
-    '''
+    temp = matchRotations(pattern, rules)   # Try rotating it
+    if temp != None:
+        return temp
+
+    temp = flipHorizontal(pattern)          # Try flipping horizontally
+    if temp in rules:
+        return mulLine(rules[temp])
+
+
     temp = mulLine(temp)
-    for i in range(0,len(temp)):
-        print(temp[i])
-    temp = oneLine(temp)
-    print(temp)
-    '''
+    temp = matchRotations(temp, rules)      # Try rotating it
+    if temp != None:
+        return temp
+
+    temp = flipVertical(pattern)            # Try flipping it horizontally
     if temp in rules:
         return mulLine(rules[temp])
 
-    temp = flipVertical(pattern)
-    #print(temp)
-    if temp in rules:
-        return mulLine(rules[temp])
-
-    temp = flipVertical(mulLine(flipHorizontal(pattern)))
-    #print(temp)
-    if temp in rules:
-        return mulLine(rules[temp])
-
-    temp = oneLine(rotate(pattern))
-    #print(temp)
-    if temp in rules:
-        return mulLine(rules[temp])
-
-    '''
     temp = mulLine(temp)
-    print("Rotate")
-    for i in range(0,len(temp)):
-        print(temp[i])
-    temp = oneLine(temp)
-    '''
+    temp = matchRotations(temp, rules)      # Try rotating it
+    if temp != None:
+        return temp
 
-    temp = oneLine(rotate(mulLine(temp)))
-    #print(temp)
+
+    temp = flipVertical(mulLine(flipHorizontal(pattern)))   #Try flipping it along both axis'
     if temp in rules:
         return mulLine(rules[temp])
 
-    '''
     temp = mulLine(temp)
-    print("Rotate")
-    for i in range(0,len(temp)):
-        print(temp[i])
-    temp = oneLine(temp)
-    '''
+    temp = matchRotations(temp, rules)      # Try rotating it
+    if temp != None:
+        return temp
 
-    temp = oneLine(rotate(mulLine(temp)))
-    #print(temp)
-    if temp in rules:
-        return mulLine(rules[temp])
 
-    '''
-    temp = mulLine(temp)
-    print("Rotate")
-    for i in range(0,len(temp)):
-        print(temp[i])
-    temp = oneLine(temp)
-    '''
+
     print("Something's wrong")
 
 
@@ -149,14 +138,17 @@ def enhanceThree(art, rules, size):
     nr = 0
     nc = 0
 
+    print(str(newSize) + " X " + str(newSize))
+
     i = 0
     while i < size:
         j = 0
+        nc = 0
         while j < size:
             pattern = getSectionAt(art, i, j, 3)
             newPattern = match(pattern, rules)
-            for r in range(0,4):
-                for c in range(0, 4):
+            for r in range(0,len(newPattern)):
+                for c in range(0, len(newPattern[r])):
                     newArt[nr+r][nc+c] = newPattern[r][c]
             j += 3
             nc += 4
@@ -176,6 +168,8 @@ def enhanceTwo(art, rules, size):
 
     nr = 0
     nc = 0
+
+    print(str(newSize) + " X " + str(newSize))
 
     i = 0
     while i < size:
@@ -226,6 +220,7 @@ for i in range(0,5):
     size = len(art)
     for j in range(0,size):
         print(art[j])
+    print()
 
 count = 0
 for i in range(0,len(art)):
